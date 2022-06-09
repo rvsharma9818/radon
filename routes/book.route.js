@@ -4,24 +4,19 @@ const router = express.Router();
 const {
   postbookdetails,
   getbookdetails,
-  updatebookdetails,
-  getparticularbookdetails,
-  filterbyageandrating,
-  getbookdetailsbyauthorname,
-  getbooklessthanmore,
-  getbookdetailsbyname
+  updatebookbypublishername,
+  updatebookbyrating
+
 } = require("../controllers/bookcontroller");
 
 router.route("/getbook").get(getbookdetails);
 
 router.route("/postbook").post(postbookdetails);
 
-router.route("/updatebookdetails/:id").put(updatebookdetails);
-router.route("/getparticularbookdetails/:id").get(getparticularbookdetails);
-router.route("/filterbyageandrating").get(filterbyageandrating);
-router.route("/getbookdetailsbyauthorname").get(getbookdetailsbyauthorname);
-router.route("/getbookdetailsbyname").get(getbookdetailsbyname);
+router.route("/updatetrue").put(updatebookbypublishername);
 
-router.route("/getbooklessthanmore").get(getbooklessthanmore);
+
+router.route("/updaterating").put(updatebookbyrating);
+
 
 module.exports = router;

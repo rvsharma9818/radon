@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const Connectdatabase = () =>{
-mongoose.connect('mongodb://localhost:27017/mongoosesession3',{
+mongoose.connect('mongodb://localhost:27017/populate',{
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).then((data) =>{

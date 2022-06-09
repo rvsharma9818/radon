@@ -1,142 +1,73 @@
 const Book = require("../models/book.model");
 const Author = require("../models/author.model");
+const Publisher = require("../models/publisher.model");
+
 exports.postbookdetails = async (req, res) => {
   try {
-    const bookname = await Book.findOne({ name: req.body.name });
-    if (bookname) {
-      return res.status(401).json("Book name already exist");
-    }
-    const data = new Book(req.body);
-    const result = await data.save();
-    return res.status(200).json(result);
+    let authorid = req.body.authorid;
+    let author = await Author.findById(authorid);
+    let publisherid = req.body.publisherid;
+    let publisher = await Publisher.findById(publisherid);
+
+    if (!authorid) return res.status(401).send("Authorid Fields is required");
+    
+    if (!author) return res.status(401).send("Authorid is not exist into database");
+    
+    if (!publisherid)  return res.status(401).send("Publisherid Fields is required");
+   
+    if (!publisher)  return res.status(401).send("Publisherid is not exist into database");
+   
+    let data = new Book(req.body);
+    let result = await data.save();
+    return res.status(200).send(result);
   } catch (error) {
-    return res.status(500).json(error);
+    return res.status(500).send(error);
   }
 };
 
 exports.getbookdetails = async (req, res) => {
   try {
-    const bookname = await Book.find();
-    return res.status(200).json(bookname);
-  } catch (error) {
-    return res.status(500).json(error);
-  }
-};
-
-exports.updatebookdetails = async (req, res) => {
-  try {
-    let book = await Book.findById(req.params.id);
-    if (!book) {
-      return res.status(401).json("Author not found");
-    }
-    const data = {
-      name: req.body.name || book.name,
-      price: req.body.price || book.price,
-      rating: req.body.rating || book.rating,
-      authorid: req.body.authorid || book.authorid,
-    };
-    book = await Book.findByIdAndUpdate(req.params.id, data, { new: true });
-    return res.status(200).json("upadte succesflly", book);
-  } catch (error) {
-    return res.status(500).json(error);
-  }
-};
-exports.getparticularbookdetails = async (req, res) => {
-  try {
-    const book = await Book.find({authorid:req.params.id});
+    const book = await Book.find().populate(["publisherid", "authorid"]);
     return res.status(200).json(book);
   } catch (error) {
+    console.log(error);
     return res.status(500).json(error);
   }
 };
 
-exports.filterbyageandrating = async (req, res) => {
-  let author = await Author
-  .find({ age: { $gt: 50 } })
-  .select({ authorname: 1, age: 1, _id: 0, author_id: 1 });
-const ids = author.map((ele) => ele.author_id);
-
-let book = await Book
-  .find({ ratings: { $gt: 4 }, author_id: { $in: ids } })
-  .select({ _id: 0 });
-
-book = book.map((ele) => ele.author_id);
-author = author.filter((ele) => book.includes(ele.author_id)).map((ele)=>{return{author_name : ele.authorname , age :ele.age}});
-return  res.send(author);
-
-};
-
-exports.getbookdetailsbyauthorname = async (req, res) => {
+exports.updatebookbypublishername = async (req, res) => {
   try {
-    const author = await Author.findOne({
-      authorname: req.query.authorname,
-    }).select({ authorname: 1 });
-    if (!author) {
-      return res.status(400).json("bookname not exist into database");
-    }
-    let id = author._id
-
-    const book = await Book.find({ authorid: id}).select({name:1,_id:0})
-    
-
-    return res.status(200).json({
-      success: true,
-      authorname: author,
-      booklist: book,
+    const publisher = await Publisher.find({
+      name: { $in: ["HarperCollins", "Penguin"] },
     });
+    const ids = publisher.map((ele) => ele._id);
+    let book = await Book.updateMany(
+      { publisherid:  {$in: ids}  },
+      { $set: { ishardcore: true } },
+      { new: true }
+    );
+    let book1 = await Book.find({ publisherid: { $in: ids } });
+
+    return res.status(200).send(book1);
   } catch (error) {
-    return res.status(500).json(error);
+    return res.status(500).send(error);
   }
 };
-
-exports.getbookdetailsbyname = async (req, res) => {
+exports.updatebookbyrating = async (req, res) => {
   try {
-    let book = await Book.findOneAndUpdate({
-      name: req.query.name,
-    },{$set:{price:100}},{new:true})
-    if (!book) {
-      return res.status(400).json("bookname not exist into database");
-    }
-    let id = book.authorid
-
-    const author = await Author.find({ _id:id}).select({authorname:1,_id:0})
-
-    return res.status(200).json({
-      success: true,
-      booklist: book,
-      authorname: author,
+    const author = await Author.find({
+      rating: { $gte:3.5 },
     });
+    const ids = author.map((ele) => ele._id);
+    let book = await Book.updateMany(
+      { authorid: { $in: ids } },
+      { $inc : { price: 10 }} ,
+       
+    );
+    let book1 = await Book.find({ authorid: { $in: ids } });
+
+    return res.status(200).send(book1);
   } catch (error) {
-    return res.status(500).json(error);
-  }
-};
-
-
-exports.getbooklessthanmore = async (req, res) => {
-  try {
-    let books = await Book
-    .find({ price: { $gte: 50, $lte: 100 } })
-    .select({ authorid: 1 ,name:1});
-
-  books = books.map((book) => book.authorid);
-  const authors = await Author.find({ _id: { $in: books } });
-  let authorName = authors.map((name) => name.authorname);
- let  d = {}
-
-  for (var i = 0; i < books.length; i++){
-
-  
-  d[books[i]] = authorName[i];
-  }
-  res.send({
-    success:true,
-    booklist1:books,
-
-    booklist:d,
-    author:authorName
-  });
-  } catch (error) {
-    console.log(error)
-    return res.status(500).json(error);
+    return res.status(500).send(error);
   }
 };
