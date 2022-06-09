@@ -6,7 +6,7 @@ const {
   getbookdetails,
   updatebookdetails,
   getparticularbookdetails,
-  deletebookdetails,
+  filterbyageandrating,
   getbookdetailsbyauthorname,
   getbooklessthanmore,
   getbookdetailsbyname
@@ -18,7 +18,7 @@ router.route("/postbook").post(postbookdetails);
 
 router.route("/updatebookdetails/:id").put(updatebookdetails);
 router.route("/getparticularbookdetails/:id").get(getparticularbookdetails);
-router.route("/deletebookdetails/:id").delete(deletebookdetails);
+router.route("/filterbyageandrating").get(filterbyageandrating);
 router.route("/getbookdetailsbyauthorname").get(getbookdetailsbyauthorname);
 router.route("/getbookdetailsbyname").get(getbookdetailsbyname);
 

@@ -43,24 +43,27 @@ exports.updatebookdetails = async (req, res) => {
 };
 exports.getparticularbookdetails = async (req, res) => {
   try {
-    const book = await Book.findOne(req.query.id);
+    const book = await Book.find({authorid:req.params.id});
     return res.status(200).json(book);
   } catch (error) {
     return res.status(500).json(error);
   }
 };
 
-exports.deletebookdetails = async (req, res) => {
-  const book = await Book.findById(req.params.id);
-  if (!book) {
-    return res.status(400).send("Book not found put the right id");
-  }
-  let del = await book.remove();
-  res.status(200).json({
-    success: true,
-    message: "User deleted successfully",
-    del,
-  });
+exports.filterbyageandrating = async (req, res) => {
+  let author = await Author
+  .find({ age: { $gt: 50 } })
+  .select({ authorname: 1, age: 1, _id: 0, author_id: 1 });
+const ids = author.map((ele) => ele.author_id);
+
+let book = await Book
+  .find({ ratings: { $gt: 4 }, author_id: { $in: ids } })
+  .select({ _id: 0 });
+
+book = book.map((ele) => ele.author_id);
+author = author.filter((ele) => book.includes(ele.author_id)).map((ele)=>{return{author_name : ele.authorname , age :ele.age}});
+return  res.send(author);
+
 };
 
 exports.getbookdetailsbyauthorname = async (req, res) => {
