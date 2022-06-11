@@ -56,7 +56,7 @@ exports.updatebookbypublishername = async (req, res) => {
 exports.updatebookbyrating = async (req, res) => {
   try {
     const author = await Author.find({
-      rating: { $gte:3.5 },
+      rating: { $gt:3.5 },
     });
     const ids = author.map((ele) => ele._id);
     let book = await Book.updateMany(

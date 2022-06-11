@@ -4,13 +4,13 @@ var bodyParser = require("body-parser");
 const route = require("./routes/book.route");
 const route1 = require("./routes/author.route");
 const route2 = require("./routes/publisher");
-
+const {mid}= require('./middleware/middleware')
 const app = express();
 const mongodb = require("./mongodbconnections/mongooseconnections");
 mongodb();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(mid);
 app.use("/book/", route);
 app.use("/author/", route1);
 app.use("/publisher/", route2);
