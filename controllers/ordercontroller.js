@@ -9,12 +9,12 @@ exports.postorder = async (req, res) => {
     if (!userid) return res.status(401).send("User is not Present in db");
     if (!productid) return res.status(401).send("Product is not Present in db");
     var price = 0;
-    if (userid.isFreeAppUser == true) {
+    if (req.header('isFreeAppUser')== true) {
       const data = new Order({
         userid: req.body.userid,
         productid: req.body.productid,
         amount: price,
-        isFreeAppUser: userid.isFreeAppUser,
+        isFreeAppUser: req.header('isFreeAppUser'),
       });
 
       let result = await data.save();
@@ -31,7 +31,7 @@ exports.postorder = async (req, res) => {
         userid: req.body.userid,
         productid: req.body.productid,
         amount: price,
-        isFreeAppUser: userid.isFreeAppUser,
+        isFreeAppUser: req.header('isFreeAppUser'),
       });
 
       const user = await User.findByIdAndUpdate(
@@ -53,5 +53,9 @@ exports.postorder = async (req, res) => {
 
 exports.getorder = async (req, res) => {
   try {
-  } catch (error) {}
+    const result = await Order.find();
+    return res.status(200).send(result);
+  } catch (error) {
+    return res.status(200).send(error);
+  }
 };
