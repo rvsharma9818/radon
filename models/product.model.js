@@ -1,18 +1,22 @@
 const mongoose = require("mongoose");
 
-const PublisherSchema = new mongoose.Schema(
+const ProductSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: true,
       unique: true,
     },
-    headquarter: {
+    category: {
       type: String,
       required: true,
     },
+    price:{
+      type:Number,
+      required:true
+    }
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("newPublisher", PublisherSchema);
+module.exports = mongoose.model("products", ProductSchema);

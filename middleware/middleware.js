@@ -1,9 +1,9 @@
-var ip = require('ip');
+exports.mid = (req, res, next) => {
+  const authHeader = req.header("isFreeAppUser");
+  if (authHeader) {
+    next();
+  } else {
+    return res.status(400).send("headers is missing");
+  }
+};
 
-
-exports.mid = async(req,res,next)=>{
-    var fullPath = req.baseUrl + req.path;
-    console.log(ip.address());
-    console.log(fullPath);      // exact defined route
-console.log(Date())
-}
