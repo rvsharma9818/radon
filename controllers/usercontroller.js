@@ -13,7 +13,7 @@ exports.createUser = async (req, res) => {
     if (mobile) return res.status(401).send("mobile already regeister");
 
     const data = new User(req.body);
-    const result = await  data.save();
+    const result = await   data.save();
 
      res.status(200).send(result);
   } catch (error) {
@@ -27,7 +27,7 @@ exports.loginuser = async (req, res) => {
 
     if (emailid.isDeleted == true) return res.status(404).json("User not exist in database");
 
-    if (!emailid) return res.status(401).send("emailid already regeister");
+    if (!emailid) return res.status(401).send("emailid not exist in db ");
 
     const inputpassword = req.body.password;
 
@@ -64,8 +64,9 @@ exports.getuserdetails = async (req, res) => {
 exports.updateuserdetails = async (req, res) => {
   try {
     let user = await User.findById(req.params.userid);
+    
 
-    if (user.isDeleted == true) return res.status(404).json("User not exist in database");
+    if (!user && user.isDeleted == true) return res.status(404).json("User not exist in database");
 
     const data = {
       firstname: req.body.firstname || user.firstname,
@@ -83,6 +84,7 @@ exports.updateuserdetails = async (req, res) => {
     res.status(200).json(user1);
 
   } catch (error) {
+    console.log(error)
     return res.status(500).json(error);
   }
 };

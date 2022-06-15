@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { verifyToken } = require('../middleware/middleware')
+const { verifyToken,verifyTokenAndAuthorization } = require('../middleware/middleware')
 const {
   createUser,
   loginuser,
@@ -9,15 +9,15 @@ const {
   deleteuserdetails
 } = require("../controllers/usercontroller");
 
-router.route("/getuser/:userid").get(verifyToken,getuserdetails);
+router.route("/getuser/:userid").get(verifyTokenAndAuthorization,getuserdetails);
 
 router.route("/regestriation").post(createUser);
 
 router.route("/login").post(loginuser);
 
-router.route("/updateuser/:userid").put(verifyToken,updateuserdetails);
+router.route("/updateuser/:userid").put(verifyTokenAndAuthorization,updateuserdetails);
 
-router.route("/deleteuser/:userid").delete(verifyToken,deleteuserdetails);
+router.route("/deleteuser/:userid").delete(verifyTokenAndAuthorization,deleteuserdetails);
 
 
 
